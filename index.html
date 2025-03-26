@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบสุขศึกษา ป.3 - อาหารหลัก 5 หมู่</title>
+    <style>
+        body {
+            font-family: 'Kanit', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            min-height: 80vh;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 28px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .info-page, .quiz-page, .result-page {
+            display: none;
+        }
+        .active-page {
+            display: block;
+        }
+        .student-info {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #e8f4fc;
+            border-radius: 10px;
+        }
+        .info-row {
+            margin-bottom: 15px;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .instruction {
+            background-color: #fff9e6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid #ffcc00;
+        }
+        .question {
+            margin-bottom: 25px;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        .options {
+            margin-left: 20px;
+        }
+        .option {
+            margin: 12px 0;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            padding-left: 45px;
+        }
+        .option:hover {
+            background-color: #e8f4fc;
+            border-color: #3498db;
+        }
+        .option.selected {
+            background-color: #d4edff;
+            border-color: #3498db;
+            font-weight: bold;
+        }
+        .option-number {
+            position: absolute;
+            left: 15px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .nav-btn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .nav-btn:hover {
+            background-color: #2980b9;
+        }
+        .nav-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .bloom-level {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .food-group {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 5px;
+            background-color: #e8f4fc;
+            color: #2980b9;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        .popup-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .popup-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .answer-comparison {
+            margin: 15px 0;
+        }
+        .user-answer, .correct-answer {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .user-answer {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .correct-answer {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e8f4fc;
+            border-radius: 8px;
+        }
+        .close-popup {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .close-popup:hover {
+            background-color: #2980b9;
+        }
+        .result-summary {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .score-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 20px 0;
+        }
+        .result-details {
+            text-align: left;
+            margin-top: 30px;
+        }
+        .result-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .correct {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+        .incorrect {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- หน้าข้อมูลนักเรียน -->
+        <div id="info-page" class="info-page active-page">
+            <h1>แบบทดสอบสุขศึกษา ป.3 - อาหารหลัก 5 หมู่</h1>
+            
+            <div class="student-info">
+                <div class="info-row">
+                    <label for="student-name">ชื่อ-สกุล:</label>
+                    <input type="text" id="student-name" placeholder="กรุณากรอกชื่อ-สกุล">
+                </div>
+                <div class="info-row">
+                    <label for="student-class">ชั้น:</label>
+                    <input type="text" id="student-class" placeholder="ตัวอย่าง: ป.3/1">
+                </div>
+                <div class="info-row">
+                    <label for="student-number">เลขที่:</label>
+                    <input type="text" id="student-number" placeholder="กรุณากรอกเลขที่">
+                </div>
+            </div>
+            
+            <div class="instruction">
+                <h3>คำแนะนำในการทำแบบทดสอบ</h3>
+                <p>1. แบบทดสอบนี้มีทั้งหมด 10 ข้อ เกี่ยวกับอาหารหลัก 5 หมู่</p>
+                <p>2. แต่ละข้อมี 4 ตัวเลือก ให้เลือกคำตอบที่ถูกต้องที่สุดเพียง 1 ข้อ</p>
+                <p>3. สามารถย้อนกลับไปแก้ไขคำตอบก่อนหน้านี้ได้</p>
+                <p>4. หลังจากส่งคำตอบ จะแสดงผลลัพธ์พร้อมคำอธิบาย</p>
+                <p>5. แบบทดสอบนี้แบ่งตามทฤษฎีของบลูม ครอบคลุมทั้ง 6 ระดับการคิด</p>
+            </div>
+            
+            <button id="start-btn" class="nav-btn" style="display: block; margin: 0 auto;">เริ่มทำแบบทดสอบ</button>
+        </div>
+        
+        <!-- หน้าทำแบบทดสอบ -->
+        <div id="quiz-page" class="quiz-page">
+            <div class="progress-bar">
+                <div id="progress" class="progress"></div>
+            </div>
+            
+            <div id="question-container"></div>
+            
+            <div class="nav-buttons">
+                <button id="prev-btn" class="nav-btn" disabled>ข้อก่อนหน้า</button>
+                <button id="next-btn" class="nav-btn">ข้อต่อไป</button>
+                <button id="submit-btn" class="nav-btn" style="display: none;">ส่งคำตอบ</button>
+            </div>
+        </div>
+        
+        <!-- หน้าผลลัพธ์ -->
+        <div id="result-page" class="result-page">
+            <h1>ผลการทำแบบทดสอบ</h1>
+            
+            <div id="student-result-info" class="student-info"></div>
+            
+            <div class="result-summary">
+                <div id="score-display" class="score-display"></div>
+                <div id="result-message"></div>
+            </div>
+            
+            <div class="result-details" id="result-details"></div>
+            
+            <button id="restart-btn" class="nav-btn" style="display: block; margin: 30px auto;">ทำแบบทดสอบอีกครั้ง</button>
+        </div>
+    </div>
+    
+    <!-- Popup แสดงเฉลย -->
+    <div id="answer-popup" class="popup">
+        <div class="popup-content">
+            <div class="popup-title">เฉลยคำตอบ</div>
+            <div id="answer-comparison" class="answer-comparison"></div>
+            <div id="answer-explanation" class="explanation"></div>
+            <button id="close-popup" class="close-popup">ปิด</button>
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลคำถามและคำตอบ
+        const questions = [
+            {
+                id: 1,
+                text: "1. อาหารหลัก 5 หมู่ ประกอบด้วยหมู่ใดบ้าง?",
+                bloom: "(ระดับความรู้)",
+                options: [
+                    { id: "ก", text: "ข้าว แป้ง น้ำตาล ไขมัน โปรตีน" },
+                    { id: "ข", text: "คาร์โบไฮเดรต โปรตีน ไขมัน วิตามิน เกลือแร่" },
+                    { id: "ค", text: "เนื้อสัตว์ ผัก ผลไม้ นม ไข่" },
+                    { id: "ง", text: "ข้าว-แป้ง เนื้อสัตว์ ผัก ผลไม้ นม-ไข่ ไขมัน" }
+                ],
+                correct: "ง",
+                explanation: "อาหารหลัก 5 หมู่ ได้แก่ หมู่ 1 ข้าว-แป้ง, หมู่ 2 เนื้อสัตว์, หมู่ 3 ผัก, หมู่ 4 ผลไม้, หมู่ 5 ไขมัน"
+            },
+            {
+                id: 2,
+                text: "2. อาหารในหมู่ใดที่ให้พลังงานกับร่างกายมากที่สุด?",
+                bloom: "(ระดับความเข้าใจ)",
+                options: [
+                    { id: "ก", text: "หมู่ 1 ข้าว-แป้ง", tag: "(คาร์โบไฮเดรต)" },
+                    { id: "ข", text: "หมู่ 2 เนื้อสัตว์", tag: "(โปรตีน)" },
+                    { id: "ค", text: "หมู่ 5 ไขมัน", tag: "(ไขมัน)" },
+                    { id: "ง", text: "หมู่ 4 ผัก", tag: "(วิตามิน)" }
+                ],
+                correct: "ค",
+                explanation: "หมู่ 5 ไขมันให้พลังงานมากที่สุด (9 แคลอรี่/กรัม) มากกว่าคาร์โบไฮเดรตและโปรตีน (4 แคลอรี่/กรัม)"
+            },
+            {
+                id: 3,
+                text: "3. ถ้านักเรียนต้องการอาหารที่ช่วยในการเจริญเติบโตของร่างกาย ควรเลือกกินอาหารหมู่ใดเป็นหลัก?",
+                bloom: "(ระดับการนำไปใช้)",
+                options: [
+                    { id: "ก", text: "หมู่ 1 ข้าว-แป้ง" },
+                    { id: "ข", text: "หมู่ 2 เนื้อสัตว์" },
+                    { id: "ค", text: "หมู่ 3 ผัก" },
+                    { id: "ง", text: "หมู่ 5 ไขมัน" }
+                ],
+                correct: "ข",
+                explanation: "หมู่ 2 เนื้อสัตว์ (โปรตีน) ช่วยในการเจริญเติบโตและซ่อมแซมส่วนที่สึกหรอของร่างกาย"
+            },
+            {
+                id: 4,
+                text: "4. อาหารเช้าของนักเรียนมีข้าวผัดไข่ ผัดผักรวม และน้ำส้มคั้น อาหารนี้มีอาหารกี่หมู่?",
+                bloom: "(ระดับการวิเคราะห์)",
+                options: [
+                    { id: "ก", text: "2 หมู่" },
+                    { id: "ข", text: "3 หมู่" },
+                    { id: "ค", text: "4 หมู่" },
+                    { id: "ง", text: "5 หมู่" }
+                ],
+                correct: "ข",
+                explanation: "ข้าวผัดไข่ (หมู่ 1+2), ผัดผักรวม (หมู่ 3), น้ำส้มคั้น (หมู่ 4) รวมเป็น 3 หมู่"
+            },
+            {
+                id: 5,
+                text: "5. นักเรียนคิดว่าทำไมเราจึงควรกินอาหารให้ครบ 5 หมู่ทุกวัน?",
+                bloom: "(ระดับการประเมินค่า)",
+                options: [
+                    { id: "ก", text: "เพราะร่างกายต้องการสารอาหารที่หลากหลายเพื่อการทำงานที่สมบูรณ์" },
+                    { id: "ข", text: "เพราะครูสั่งให้กิน" },
+                    { id: "ค", text: "เพราะอาหาร 5 หมู่อร่อยกว่าอาหารหมู่เดียว" },
+                    { id: "ง", text: "เพราะพ่อแม่เตรียมไว้ให้" }
+                ],
+                correct: "ก",
+                explanation: "ร่างกายต้องการสารอาหารที่หลากหลายจากอาหารแต่ละหมู่เพื่อการทำงานที่สมบูรณ์ของระบบต่างๆ ในร่างกาย"
+            },
+            {
+                id: 6,
+                text: "6. ถ้านักเรียนจะออกแบบมื้ออาหารที่มีอาหารครบ 5 หมู่ ควรมีอะไรบ้าง?",
+                bloom: "(ระดับการสร้างสรรค์)",
+                options: [
+                    { id: "ก", text: "ข้าวสวย ไข่เจียว ผักคะน้า ส้มเขียวหวาน น้ำมันพืช" },
+                    { id: "ข", text: "ขนมปัง เนย แยม นม กล้วย" },
+                    { id: "ค", text: "ไก่ทอด มันฝรั่งทอด น้ำอัดลม" },
+                    { id: "ง", text: "ก๋วยเตี๋ยวผัดซีอิ๊ว ไข่ดาว" }
+                ],
+                correct: "ก",
+                explanation: "ข้าวสวย (หมู่ 1), ไข่เจียว (หมู่ 2), ผักคะน้า (หมู่ 3), ส้มเขียวหวาน (หมู่ 4), น้ำมันพืช (หมู่ 5)"
+            },
+            {
+                id: 7,
+                text: "7. อาหารหมู่ใดที่ช่วยในการขับถ่ายและป้องกันท้องผูก?",
+                bloom: "(ระดับความเข้าใจ)",
+                options: [
+                    { id: "ก", text: "หมู่ 1 ข้าว-แป้ง" },
+                    { id: "ข", text: "หมู่ 3 ผัก" },
+                    { id: "ค", text: "หมู่ 4 ผลไม้" },
+                    { id: "ง", text: "หมู่ 5 ไขมัน" }
+                ],
+                correct: "ข",
+                explanation: "หมู่ 3 ผัก มีใยอาหารสูงช่วยในการขับถ่ายและป้องกันท้องผูก"
+            },
+            {
+                id: 8,
+                text: "8. ถ้านักเรียนกินแต่อาหารหมู่ 1 และหมู่ 5 เป็นหลัก จะเกิดผลเสียอย่างไร?",
+                bloom: "(ระดับการวิเคราะห์)",
+                options: [
+                    { id: "ก", text: "ร่างกายจะขาดโปรตีนทำให้เจริญเติบโตช้า" },
+                    { id: "ข", text: "ร่างกายจะขาดวิตามินและเกลือแร่ทำให้ป่วยง่าย" },
+                    { id: "ค", text: "อาจทำให้อ้วนเพราะได้พลังงานมากเกินไป" },
+                    { id: "ง", text: "ถูกทุกข้อ" }
+                ],
+                correct: "ง",
+                explanation: "การกินอาหารไม่ครบ 5 หมู่จะทำให้ร่างกายขาดสารอาหารบางชนิด ส่งผลต่อการเจริญเติบโตและสุขภาพ"
+            },
+            {
+                id: 9,
+                text: "9. อาหารใดต่อไปนี้จัดอยู่ในหมู่ 4 ผลไม้?",
+                bloom: "(ระดับความรู้)",
+                options: [
+                    { id: "ก", text: "แครอท" },
+                    { id: "ข", text: "แตงโม" },
+                    { id: "ค", text: "ผักกาด" },
+                    { id: "ง", text: "มันฝรั่ง" }
+                ],
+                correct: "ข",
+                explanation: "แตงโมจัดเป็นผลไม้ ส่วนแครอท ผักกาด และมันฝรั่งจัดเป็นผัก (หมู่ 3)"
+            },
+            {
+                id: 10,
+                text: "10. นักเรียนควรปฏิบัติอย่างไรเพื่อให้ได้รับอาหารครบ 5 หมู่ทุกวัน?",
+                bloom: "(ระดับการประเมินค่า)",
+                options: [
+                    { id: "ก", text: "กินอาหารที่หลากหลายในแต่ละมื้อ" },
+                    { id: "ข", text: "กินอาหารตามใจชอบโดยไม่สนใจหมู่อาหาร" },
+                    { id: "ค", text: "กินอาหารหมู่เดียวแต่ปริมาณมาก" },
+                    { id: "ง", text: "กินวิตามินเสริมแทนการกินอาหาร" }
+                ],
+                correct: "ก",
+                explanation: "การกินอาหารที่หลากหลายในแต่ละมื้อจะช่วยให้ได้รับสารอาหารครบ 5 หมู่"
+            }
+        ];
+
+        // ตัวแปรเก็บสถานะ
+        let currentQuestion = 0;
+        let userAnswers = Array(questions.length).fill(null);
+        let studentInfo = {};
+
+        // DOM Elements
+        const infoPage = document.getElementById('info-page');
+        const quizPage = document.getElementById('quiz-page');
+        const resultPage = document.getElementById('result-page');
+        const questionContainer = document.getElementById('question-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const progressBar = document.getElementById('progress');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const popup = document.getElementById('answer-popup');
+        const answerComparison = document.getElementById('answer-comparison');
+        const answerExplanation = document.getElementById('answer-explanation');
+        const closePopup = document.getElementById('close-popup');
+
+        // เริ่มทำแบบทดสอบ
+        startBtn.addEventListener('click', () => {
+            const name = document.getElementById('student-name').value.trim();
+            const studentClass = document.getElementById('student-class').value.trim();
+            const number = document.getElementById('student-number').value.trim();
+            
+            if (!name || !studentClass || !number) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                return;
+            }
+            
+            studentInfo = { name, class: studentClass, number };
+            infoPage.classList.remove('active-page');
+            quizPage.classList.add('active-page');
+            showQuestion(currentQuestion);
+        });
+
+        // แสดงคำถาม
+        function showQuestion(index) {
+            const question = questions[index];
+            let optionsHtml = '';
+            
+            question.options.forEach(option => {
+                optionsHtml += `
+                    <div class="option" onclick="selectOption(${index}, '${option.id}')">
+                        <span class="option-number">${option.id}.</span> ${option.text}
+                        ${option.tag ? `<span class="food-group">${option.tag}</span>` : ''}
+                    </div>
+                `;
+            });
+            
+            questionContainer.innerHTML = `
+                <div class="question">
+                    <div class="question-text">${question.text} <span class="bloom-level">${question.bloom}</span></div>
+                    <div class="options">${optionsHtml}</div>
+                </div>
+            `;
+            
+            // เลือกคำตอบที่เคยเลือกไว้ (ถ้ามี)
+            if (userAnswers[index] !== null) {
+                const selectedOption = document.querySelector(`.option[onclick="selectOption(${index}, '${userAnswers[index]}')"]`);
+                if (selectedOption) {
+                    selectedOption.classList.add('selected');
+                }
+            }
+            
+            // อัพเดท progress bar
+            progressBar.style.width = `${((index + 1) / questions.length) * 100}%`;
+            
+            // อัพเดทปุ่มนำทาง
+            prevBtn.disabled = index === 0;
+            nextBtn.style.display = index === questions.length - 1 ? 'none' : 'block';
+            submitBtn.style.display = index === questions.length - 1 ? 'block' : 'none';
+        }
+
+        // เลือกคำตอบ
+        window.selectOption = function(questionIndex, optionId) {
+            // ลบคลาส selected จากทุกตัวเลือกในคำถามนี้
+            const options = document.querySelectorAll(`.question .option`);
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // เพิ่มคลาส selected ให้ตัวเลือกที่ถูกคลิก
+            const selectedOption = document.querySelector(`.option[onclick="selectOption(${questionIndex}, '${optionId}')"]`);
+            selectedOption.classList.add('selected');
+            
+            // บันทึกคำตอบ
+            userAnswers[questionIndex] = optionId;
+            
+            // แสดงเฉลยแบบ popup
+            showAnswerPopup(questionIndex, optionId);
+        };
+
+        // แสดงเฉลยแบบ popup
+        function showAnswerPopup(questionIndex, userAnswer) {
+            const question = questions[questionIndex];
+            const isCorrect = userAnswer === question.correct;
+            
+            answerComparison.innerHTML = `
+                <div class="user-answer">คำตอบของคุณ: ${userAnswer}. ${question.options.find(o => o.id === userAnswer).text}</div>
+                <div class="correct-answer">คำตอบที่ถูกต้อง: ${question.correct}. ${question.options.find(o => o.id === question.correct).text}</div>
+            `;
+            
+            answerExplanation.innerHTML = `
+                <p><strong>คำอธิบาย:</strong> ${question.explanation}</p>
+                <p>${isCorrect ? 'ยินดีด้วย! คุณตอบถูกต้อง' : 'ยังไม่ถูกต้องนะครับ ลองทบทวนอีกครั้ง'}</p>
+            `;
+            
+            popup.style.display = 'flex';
+        }
+
+        // ปิด popup
+        closePopup.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+
+        // ข้อก่อนหน้า
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        });
+
+        // ข้อต่อไป
+        nextBtn.addEventListener('click', () => {
+            if (userAnswers[currentQuestion] === null) {
+                alert('กรุณาเลือกคำตอบก่อนไปข้อต่อไป');
+                return;
+            }
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            }
+        });
+
+        // ส่งคำตอบ
+        submitBtn.addEventListener('click', () => {
+            if (userAnswers[currentQuestion] === null) {
+                alert('กรุณาเลือกคำตอบก่อนส่งแบบทดสอบ');
+                return;
+            }
+            
+            showResults();
+        });
+
+        // แสดงผลลัพธ์
+        function showResults() {
+            quizPage.classList.remove('active-page');
+            resultPage.classList.add('active-page');
+            
+            // แสดงข้อมูลนักเรียน
+            document.getElementById('student-result-info').innerHTML = `
+                <div class="info-row"><strong>ชื่อ-สกุล:</strong> ${studentInfo.name}</div>
+                <div class="info-row"><strong>ชั้น:</strong> ${studentInfo.class}</div>
+                <div class="info-row"><strong>เลขที่:</strong> ${studentInfo.number}</div>
+            `;
+            
+            // คำนวณคะแนน
+            let score = 0;
+            let resultDetailsHtml = '';
+            
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correct;
+                
+                if (isCorrect) score++;
+                
+                resultDetailsHtml += `
+                    <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <p><strong>ข้อ ${index + 1}:</strong> ${question.text}</p>
+                        <p>คำตอบของคุณ: ${userAnswer}. ${question.options.find(o => o.id === userAnswer).text}</p>
+                        <p>คำตอบที่ถูกต้อง: ${question.correct}. ${question.options.find(o => o.id === question.correct).text}</p>
+                        <p><strong>คำอธิบาย:</strong> ${question.explanation}</p>
+                    </div>
+                `;
+            });
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            let message = '';
+            
+            if (percentage >= 80) {
+                message = "ยอดเยี่ยมมาก! คุณมีความรู้เรื่องอาหาร 5 หมู่เป็นอย่างดี";
+            } else if (percentage >= 50) {
+                message = "ดีครับ! แต่ยังมีส่วนที่ต้องเรียนรู้เพิ่มเติม";
+            } else {
+                message = "ยังต้องฝึกฝนอีกนิดนะครับ ลองทบทวนเรื่องอาหาร 5 หมู่ดูอีกครั้ง";
+            }
+            
+            document.getElementById('score-display').textContent = `คุณได้ ${score} คะแนน จาก ${questions.length} ข้อ (${percentage}%)`;
+            document.getElementById('result-message').textContent = message;
+            document.getElementById('result-details').innerHTML = resultDetailsHtml;
+        }
+
+        // ทำแบบทดสอบอีกครั้ง
+        restartBtn.addEventListener('click', () => {
+            // รีเซ็ตข้อมูล
+            currentQuestion = 0;
+            userAnswers = Array(questions.length).fill(null);
+            
+            // กลับไปที่หน้าข้อมูลนักเรียน
+            resultPage.classList.remove('active-page');
+            infoPage.classList.add('active-page');
+            
+            // ล้างข้อมูลที่กรอก
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-class').value = '';
+            document.getElementById('student-number').value = '';
+        });
+    </script>
+</body>
+</html>
